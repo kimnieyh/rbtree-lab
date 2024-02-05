@@ -5,7 +5,7 @@
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
-  node_t *nil_node = malloc(sizeof(node_t));
+  node_t *nil_node = calloc(1,sizeof(node_t));
 
   nil_node->color = RBTREE_BLACK;
   p->nil = nil_node;
@@ -15,7 +15,6 @@ rbtree *new_rbtree(void) {
 node_t *new_node(rbtree *t, key_t key)
 {
     node_t *n = malloc(sizeof(node_t));
-
     n->left = t->nil;
     n->right = t->nil;
     n->key = key;
@@ -211,14 +210,18 @@ void delete_fixup(rbtree *t, node_t *x)
         if(x == x->parent->left)
         {
             node_t *w = x->parent->right;
-            if(w->color == RBTREE_RED) // case 1
+            if (w == t->nil){
+                if (x->parent->color == RBTREE_BLACK)
+                    x = x->parent;
+                else
+                    x->parent->color = RBTREE_BLACK;
+            }else if(w->color == RBTREE_RED) // case 1
             {
                 w->color = RBTREE_BLACK;
                 x->parent->color = RBTREE_RED;
                 left_rotation(t,x->parent);
-                w = x->parent->right;
             }
-            if(w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK)//case 2
+            else if(w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK)//case 2
             {
                 w->color = RBTREE_RED;
                 x = x->parent;
@@ -229,7 +232,6 @@ void delete_fixup(rbtree *t, node_t *x)
                     w->left->color = RBTREE_BLACK;
                     w->color = RBTREE_RED;
                     right_rotation(t,w);
-                    w = x->parent->right;
                 }//case 4
                 w->color = x->parent->color;
                 x->parent->color = RBTREE_BLACK;
@@ -239,14 +241,17 @@ void delete_fixup(rbtree *t, node_t *x)
             }
         }else{
             node_t *w = x->parent->left;
-            if(w->color ==RBTREE_RED) //case 1 
+            if (w == t->nil){
+                if (x->parent->color == RBTREE_BLACK)
+                    x = x->parent;
+                else
+                    x->parent->color = RBTREE_BLACK;
+            }else if(w->color ==RBTREE_RED) //case 1 
             {
                 w->color = RBTREE_BLACK;
                 x->parent->color = RBTREE_RED;
                 right_rotation(t,x->parent);
-                w = x->parent->left;
-            }
-            if(w->right->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK ) //case 2 
+            }else if(w->right->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK ) //case 2 
             {
                 w->color = RBTREE_RED;
                 x= x->parent;
@@ -257,7 +262,6 @@ void delete_fixup(rbtree *t, node_t *x)
                     w->right->color = RBTREE_BLACK;
                     w->color = RBTREE_RED;
                     left_rotation(t,w);
-                    w = w->parent->left;
                 }//case 4
                 w->color = x->parent->color;
                 x->parent->color = RBTREE_BLACK;
