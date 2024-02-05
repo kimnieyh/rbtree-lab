@@ -303,6 +303,7 @@ int rbtree_erase(rbtree *t, node_t *p) {
       y->left->parent = y;
       y->color = p->color;
   }
+  free(p);
   if(y_origin_color == 0)
   {
       delete_fixup(t,x);
