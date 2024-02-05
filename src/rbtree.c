@@ -7,28 +7,17 @@ rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
   node_t *nil_node = malloc(sizeof(node_t));
 
-  nil_node->parent = NULL;
-  nil_node->right = nil_node;
-  nil_node->left = nil_node;
-  nil_node->key = 0;
   nil_node->color = RBTREE_BLACK;
   p->nil = nil_node;
   p->root = p->nil;
   return p;
 }
-node_t *new_node(key_t key)
+node_t *new_node(rbtree *t, key_t key)
 {
     node_t *n = malloc(sizeof(node_t));
-    node_t *nil_node = malloc(sizeof(node_t));
 
-    nil_node->parent = n;
-    nil_node->right = NULL;
-    nil_node->left = NULL;
-    nil_node->key = 0;
-    nil_node->color = RBTREE_BLACK;
-    n->parent = nil_node;
-    n->left = nil_node;
-    n->right = nil_node;
+    n->left = t->nil;
+    n->right = t->nil;
     n->key = key;
     n->color = RBTREE_RED;
     return n;
@@ -148,7 +137,7 @@ void insert_fixup(rbtree *t,node_t *z)
 }
 node_t *rbtree_insert(rbtree *t, const key_t key) {
   node_t *y = t->nil;
-  node_t *n = new_node(key);
+  node_t *n = new_node(t,key);
     node_t *temp = t->root;
 
     while(temp != t->nil)
