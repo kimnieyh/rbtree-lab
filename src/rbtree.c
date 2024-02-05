@@ -146,7 +146,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
             temp = temp->left;
         else
             temp = temp->right;
-    }
+    } 
     n->parent = y;
     if(y == t->nil)
         t->root = n;
