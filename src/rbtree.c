@@ -10,6 +10,7 @@ rbtree *new_rbtree(void) {
 
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
+  //test
   free(t);
 }
 
