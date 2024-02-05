@@ -1,14 +1,15 @@
 #include "rbtree.h"
 
 #include <stdlib.h>
+#include <assert.h>
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
   node_t *nil_node = malloc(sizeof(node_t));
 
   nil_node->parent = NULL;
-  nil_node->right = NULL;
-  nil_node->left = NULL;
+  nil_node->right = nil_node;
+  nil_node->left = nil_node;
   nil_node->key = 0;
   nil_node->color = RBTREE_BLACK;
   p->nil = nil_node;
@@ -18,10 +19,16 @@ rbtree *new_rbtree(void) {
 node_t *new_node(key_t key)
 {
     node_t *n = malloc(sizeof(node_t));
+    node_t *nil_node = malloc(sizeof(node_t));
 
-    n->parent = NULL;
-    n->left = NULL;
-    n->right = NULL;
+    nil_node->parent = n;
+    nil_node->right = NULL;
+    nil_node->left = NULL;
+    nil_node->key = 0;
+    nil_node->color = RBTREE_BLACK;
+    n->parent = nil_node;
+    n->left = nil_node;
+    n->right = nil_node;
     n->key = key;
     n->color = RBTREE_RED;
     return n;
@@ -265,7 +272,7 @@ void delete_fixup(rbtree *t, node_t *x)
                 }//case 4
                 w->color = x->parent->color;
                 x->parent->color = RBTREE_BLACK;
-                x->left->color = RBTREE_BLACK;
+                w->left->color = RBTREE_BLACK;
                 right_rotation(t,x->parent);
                 x = t->root;
             }
@@ -275,7 +282,7 @@ void delete_fixup(rbtree *t, node_t *x)
 }
 int rbtree_erase(rbtree *t, node_t *p) {
   node_t *y = p;
-  node_t *x = p;
+  node_t *x;
   color_t y_origin_color = y->color;
   
   if(p->left == t->nil) // no children or only right
@@ -292,22 +299,22 @@ int rbtree_erase(rbtree *t, node_t *p) {
       x = y->right;
       if (y->parent == p) // y가 z의 자식
       {
-          x->parent = y;
+          x->parent = p;
       }else{
           transplant(t,y,y->right);
-          y->left = p->left;
-          y->left->parent = y;
+          y->right = p->right;
+          y->right->parent = y;
       }
       transplant(t,p,y);
       y->left = p->left;
       y->left->parent = y;
       y->color = p->color;
   }
-  free(p);
-  if(y_origin_color == 0)
+  if(y_origin_color == RBTREE_BLACK)
   {
       delete_fixup(t,x);
   }
+  free(p);
   return 0;
 }
 int inorder_array(node_t *nil,node_t *root,key_t *arr,const size_t n, int index){
